@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"projectGO/pkg/utils"
 )
 
 func exit() {
@@ -22,5 +23,5 @@ func main() {
 
 	fmt.Printf("\nVocê tem %d anos!\n", idade)
 
-	exit()
+	utils.Exit()
 }
