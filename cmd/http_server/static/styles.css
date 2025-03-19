@@ -1,0 +1,13 @@
+html {
+    background-color: #303030;
+    color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+a {
+    text-decoration: none;
+    color: #fffb00;
+}
+.test-text {
+    color: red;
+    font-size: 40px;
+}
