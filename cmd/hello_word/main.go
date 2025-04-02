@@ -1,14 +1,13 @@
 package main
 
 import (
-	"fmt"
+	// Mudando o nome do pacote para System
+	System "fmt"
 	"projectGO/pkg/utils"
 )
 
-
-
 func main() {
-	fmt.Println("Hello world!")
+	System.Println("Hello world!")
 
 	utils.Exit()
 }

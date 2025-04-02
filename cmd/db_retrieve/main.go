@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -18,7 +18,6 @@ type Usuario struct {
 
 func listarUsuarios(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.DB.Query("SELECT id, nome, idade FROM usuarios")
-	fmt.Println(rows)
 	if err != nil {
 		http.Error(w, "Erro ao buscar os dados", http.StatusInternalServerError)
 		return
