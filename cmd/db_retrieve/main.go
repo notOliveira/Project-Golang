@@ -15,16 +15,16 @@ type Usuario struct {
 	Idade int
 }
 
-func home(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("cmd/db_retrieve/templates/index.html")
+func renderTemplate(w http.ResponseWriter, templateName string) {
+	tmpl, err := template.ParseFiles("templates/" + templateName)
 	if err != nil {
-		http.Error(w, "Erro ao carregar template", http.StatusInternalServerError)
+		http.Error(w, "Erro ao carregar página", http.StatusInternalServerError)
 		return
 	}
-	tmpl.Execute(w, nil) // sem passar os dados aqui
+	tmpl.Execute(w, nil)
 }
 
-func listarUsuarios(w http.ResponseWriter, r *http.Request) {
+func getUsers(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.DB.Query("SELECT id, nome, idade FROM usuarios")
 	if err != nil {
 		http.Error(w, "Erro ao buscar os dados", http.StatusInternalServerError)
@@ -47,43 +47,42 @@ func listarUsuarios(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(usuarios)
 }
 
-func adicionarUsuario(w http.ResponseWriter, r *http.Request) {
-    if r.Method != http.MethodPost {
-        http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
-        return
-    }
+func addUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		return
+	}
 
-    defer r.Body.Close()
+	defer r.Body.Close()
 
-    var usuario Usuario
+	var usuario Usuario
 
-    // Tenta decodificar o JSON da requisição
-    err := json.NewDecoder(r.Body).Decode(&usuario)
+	// Tenta decodificar o JSON da requisição
+	err := json.NewDecoder(r.Body).Decode(&usuario)
 
 	log.Println("Dados recebidos:", usuario)
-    if err != nil {
-        log.Println("Erro ao decodificar JSON:", err)
-        http.Error(w, "Erro ao decodificar JSON", http.StatusBadRequest)
-        return
-    }
 
-    // Log para ver os dados recebidos
-    log.Println("Nome:", usuario.Nome)
-    log.Println("Idade:", usuario.Idade)
+	if err != nil {
+		log.Println("Erro ao decodificar JSON:", err)
+		http.Error(w, "Erro ao decodificar JSON", http.StatusBadRequest)
+		return
+	}
 
-    // Insere os dados no banco
-    _, err = database.DB.Exec("INSERT INTO Usuarios (nome, idade) VALUES (?, ?)", usuario.Nome, usuario.Idade)
-    if err != nil {
-        log.Println("Erro ao inserir usuário:", err)
-        http.Error(w, "Erro ao inserir usuário", http.StatusInternalServerError)
-        return
-    }
+	// Insere os dados no banco
+	_, err = database.DB.Exec("INSERT INTO Usuarios (nome, idade) VALUES (?, ?)", usuario.Nome, usuario.Idade)
+	if err != nil {
+		log.Println("Erro ao inserir usuário:", err)
+		http.Error(w, "Erro ao inserir usuário", http.StatusInternalServerError)
+		return
+	}
 
-    // Redireciona após sucesso
-    http.Redirect(w, r, "/", http.StatusSeeOther)
+	// Retorna um JSON do usuário inserido
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(usuario)
 }
 
-func excluirUsuario(w http.ResponseWriter, r *http.Request) {
+func deleteUser(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	_, err := database.DB.Exec("DELETE FROM usuarios WHERE id = ?", id)
 	if err != nil {
@@ -96,10 +95,22 @@ func excluirUsuario(w http.ResponseWriter, r *http.Request) {
 func main() {
 	database.InitDB() // Inicializa a conexão com o banco
 
-	http.HandleFunc("/", home)
-	http.HandleFunc("/listar", listarUsuarios)
-	http.HandleFunc("/adicionar", adicionarUsuario)
-	http.HandleFunc("/excluir", excluirUsuario)
+	// Páginas HTML
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "index.html")
+	})
+
+	http.HandleFunc("/adicionar", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "adicionar.html")
+	})
+
+	// Endpoints API
+	http.HandleFunc("/getUsers", getUsers)
+	http.HandleFunc("/addUser", addUser)
+	http.HandleFunc("/deleteUser", deleteUser)
+
+	fs := http.FileServer(http.Dir("static/"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	log.Println("Servidor rodando em :8000")
 	http.ListenAndServe(":8000", nil)

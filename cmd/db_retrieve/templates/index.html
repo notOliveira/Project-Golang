@@ -8,6 +8,14 @@
         table { width: 50%; margin: auto; border-collapse: collapse; }
         th, td { border: 1px solid black; padding: 8px; text-align: center; }
         th { background-color: #ddd; }
+        h2 { text-align: center; }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
 
     <script>
@@ -27,7 +35,7 @@
         }
 
         function getUsers() {
-            const response = fetch('/listar')
+            const response = fetch('/getUsers')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok ' + response.statusText);
@@ -49,7 +57,7 @@
     </script>
 </head>
 <body>
-    <h2 style="text-align: center;">Lista de Usuários</h2>
+    <h2>Lista de Usuários</h2>
     <table>
         <tr>
             <th>ID</th>
@@ -59,7 +67,7 @@
         <tbody id="userRows">
             <!-- As linhas da tabela serão preenchidas aqui pelo JavaScript -->
         </tbody>
-        
     </table>
+    <button onclick="window.location.href='/adicionar'">Adicionar Usuário</button>
 </body>
 </html>
