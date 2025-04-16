@@ -9,6 +9,44 @@
         th, td { border: 1px solid black; padding: 8px; text-align: center; }
         th { background-color: #ddd; }
     </style>
+
+    <script>
+        // Função para popular a tabela com os dados recebidos
+        function populateTable(data) {
+            const userRows = document.getElementById('userRows');
+            userRows.innerHTML = ''; // Limpa as linhas existentes
+            data.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${user.ID}</td>
+                <td>${user.Nome}</td>
+                <td>${user.Idade}</td>
+                `;
+                userRows.appendChild(row);
+            })
+        }
+
+        function getUsers() {
+            const response = fetch('/listar')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    populateTable(data);
+                })  
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+        }
+    
+        document.addEventListener('DOMContentLoaded', (event) => {
+            getUsers(); // Chama a função para buscar os usuários quando o DOM estiver carregado
+        });
+    </script>
 </head>
 <body>
     <h2 style="text-align: center;">Lista de Usuários</h2>
@@ -18,13 +56,10 @@
             <th>Nome</th>
             <th>Idade</th>
         </tr>
-        {{range .}}
-        <tr>
-            <td>{{.ID}}</td>
-            <td>{{.Nome}}</td>
-            <td>{{.Idade}}</td>
-        </tr>
-        {{end}}
+        <tbody id="userRows">
+            <!-- As linhas da tabela serão preenchidas aqui pelo JavaScript -->
+        </tbody>
+        
     </table>
 </body>
 </html>

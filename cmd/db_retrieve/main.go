@@ -2,11 +2,10 @@ package main
 
 import (
 	//"fmt"
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
-	"strconv"
-	
 	"projectGO/pkg/database"
 )
 
@@ -14,6 +13,15 @@ type Usuario struct {
 	ID    int
 	Nome  string
 	Idade int
+}
+
+func home(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("cmd/db_retrieve/templates/index.html")
+	if err != nil {
+		http.Error(w, "Erro ao carregar template", http.StatusInternalServerError)
+		return
+	}
+	tmpl.Execute(w, nil) // sem passar os dados aqui
 }
 
 func listarUsuarios(w http.ResponseWriter, r *http.Request) {
@@ -34,26 +42,45 @@ func listarUsuarios(w http.ResponseWriter, r *http.Request) {
 		usuarios = append(usuarios, u)
 	}
 
-	tmpl, err := template.ParseFiles("cmd/db_retrieve/templates/index.html")
-	if err != nil {
-		http.Error(w, "Erro ao carregar template", http.StatusInternalServerError)
-		return
-	}
-	tmpl.Execute(w, usuarios)
+	// Define o header como JSON
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(usuarios)
 }
 
 func adicionarUsuario(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		nome := r.FormValue("nome")
-		idade, _ := strconv.Atoi(r.FormValue("idade"))
+    if r.Method != http.MethodPost {
+        http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+        return
+    }
 
-		_, err := database.DB.Exec("INSERT INTO usuarios (nome, idade) VALUES (?, ?)", nome, idade)
-		if err != nil {
-			http.Error(w, "Erro ao inserir usuário", http.StatusInternalServerError)
-			return
-		}
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}
+    defer r.Body.Close()
+
+    var usuario Usuario
+
+    // Tenta decodificar o JSON da requisição
+    err := json.NewDecoder(r.Body).Decode(&usuario)
+
+	log.Println("Dados recebidos:", usuario)
+    if err != nil {
+        log.Println("Erro ao decodificar JSON:", err)
+        http.Error(w, "Erro ao decodificar JSON", http.StatusBadRequest)
+        return
+    }
+
+    // Log para ver os dados recebidos
+    log.Println("Nome:", usuario.Nome)
+    log.Println("Idade:", usuario.Idade)
+
+    // Insere os dados no banco
+    _, err = database.DB.Exec("INSERT INTO Usuarios (nome, idade) VALUES (?, ?)", usuario.Nome, usuario.Idade)
+    if err != nil {
+        log.Println("Erro ao inserir usuário:", err)
+        http.Error(w, "Erro ao inserir usuário", http.StatusInternalServerError)
+        return
+    }
+
+    // Redireciona após sucesso
+    http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func excluirUsuario(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +96,8 @@ func excluirUsuario(w http.ResponseWriter, r *http.Request) {
 func main() {
 	database.InitDB() // Inicializa a conexão com o banco
 
-	http.HandleFunc("/", listarUsuarios)
+	http.HandleFunc("/", home)
+	http.HandleFunc("/listar", listarUsuarios)
 	http.HandleFunc("/adicionar", adicionarUsuario)
 	http.HandleFunc("/excluir", excluirUsuario)
 

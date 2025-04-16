@@ -38,6 +38,6 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	// Inicializando o servidor
-	fmt.Println("Server is running on port 8080.\nPress Ctrl + C to stop the server.")
+	fmt.Println("Server is running on port 8000.\nPress Ctrl + C to stop the server.")
 	http.ListenAndServe(":8000", nil)
 }
