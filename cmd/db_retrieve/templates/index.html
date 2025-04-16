@@ -4,18 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Usuários</title>
+    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-        table { width: 50%; margin: auto; border-collapse: collapse; }
-        th, td { border: 1px solid black; padding: 8px; text-align: center; }
-        th { background-color: #ddd; }
-        h2 { text-align: center; }
-        button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+
     </style>
 
     <script>
@@ -29,6 +21,8 @@
                 <td>${user.ID}</td>
                 <td>${user.Nome}</td>
                 <td>${user.Idade}</td>
+                <td><i class="fa fa-edit" style="font-size:36px;color:white" onclick="window.location.href='/editar/${user.ID}'"></i></td>
+                <td><i class="fa fa-trash-o" style="font-size:36px;color:red" onclick="deleteUser(${user.ID}, '${user.Nome}')"></i></td>
                 `;
                 userRows.appendChild(row);
             })
@@ -43,16 +37,33 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log(data);
                     populateTable(data);
                 })  
                 .catch(error => {
                     console.error('There has been a problem with your fetch operation:', error);
                 });
         }
+
+        function deleteUser(userId, userName) {
+            if (confirm(`Você tem certeza que deseja excluir o usuário ${userName}?`)) {
+                fetch(`/deleteUser/${userId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    alert(`Usuário ${userName} excluído com sucesso!`);
+                    getUsers();
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+            }
+        }
     
         document.addEventListener('DOMContentLoaded', (event) => {
-            getUsers(); // Chama a função para buscar os usuários quando o DOM estiver carregado
+            getUsers()
         });
     </script>
 </head>
@@ -63,6 +74,8 @@
             <th>ID</th>
             <th>Nome</th>
             <th>Idade</th>
+            <th>Editar</th>
+            <th>Excluir</th>
         </tr>
         <tbody id="userRows">
             <!-- As linhas da tabela serão preenchidas aqui pelo JavaScript -->

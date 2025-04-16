@@ -15,6 +15,7 @@ type Usuario struct {
 	Idade int
 }
 
+// Função para renderizar templates HTML
 func renderTemplate(w http.ResponseWriter, templateName string) {
 	tmpl, err := template.ParseFiles("templates/" + templateName)
 	if err != nil {
@@ -24,6 +25,7 @@ func renderTemplate(w http.ResponseWriter, templateName string) {
 	tmpl.Execute(w, nil)
 }
 
+// Endpoint GET de usuários
 func getUsers(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.DB.Query("SELECT id, nome, idade FROM usuarios")
 	if err != nil {
@@ -47,6 +49,7 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(usuarios)
 }
 
+// Endpoint POST para adicionar um usuário
 func addUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
@@ -82,14 +85,26 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(usuario)
 }
 
+// Endpoint DELETE para excluir um usuário
 func deleteUser(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
-	_, err := database.DB.Exec("DELETE FROM usuarios WHERE id = ?", id)
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		return
+	}
+	// Extrai o ID do usuário da URL
+	id := r.URL.Path[len("/deleteUser/"):]
+	if id == "" {
+		http.Error(w, "ID inválido", http.StatusBadRequest)
+		return
+	}
+
+	// Executa a exclusão no banco de dados
+	_, err := database.DB.Exec("DELETE FROM Usuarios WHERE id = ?", id)
 	if err != nil {
+		log.Println("Erro ao excluir usuário:", err)
 		http.Error(w, "Erro ao excluir usuário", http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func main() {
@@ -107,7 +122,7 @@ func main() {
 	// Endpoints API
 	http.HandleFunc("/getUsers", getUsers)
 	http.HandleFunc("/addUser", addUser)
-	http.HandleFunc("/deleteUser", deleteUser)
+	http.HandleFunc("/deleteUser/{id}", deleteUser)
 
 	fs := http.FileServer(http.Dir("static/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
