@@ -7,12 +7,19 @@ import (
 	"log"
 	"net/http"
 	"projectGO/pkg/database"
+	"strconv"
 )
 
 type Usuario struct {
 	ID    int
 	Nome  string
 	Idade int
+}
+
+func jsonError(w http.ResponseWriter, status int, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(map[string]string{"error": message})
 }
 
 // Função para renderizar templates HTML
@@ -107,6 +114,63 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Endpoint PUT para atualizar um usuário
+func updateUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPut {
+		jsonError(w, http.StatusMethodNotAllowed, "Método não permitido")
+		return
+	}
+
+	idStr := r.URL.Path[len("/updateUser/"):]
+	if idStr == "" {
+		jsonError(w, http.StatusBadRequest, "ID inválido")
+		return
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		jsonError(w, http.StatusBadRequest, "ID deve ser um número inteiro")
+		return
+	}
+
+	var usuario Usuario
+	err = json.NewDecoder(r.Body).Decode(&usuario)
+	if err != nil {
+		log.Println("Erro ao decodificar JSON:", err)
+		jsonError(w, http.StatusBadRequest, "Erro ao decodificar JSON")
+		return
+	}
+
+	log.Println("Dados recebidos:", usuario)
+
+	// Verifica se o usuário existe
+	var exists bool
+	err = database.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM Usuarios WHERE id = ?)", id).Scan(&exists)
+	if err != nil {
+		log.Println("Erro ao verificar existência do usuário:", err)
+		jsonError(w, http.StatusInternalServerError, "Erro interno ao verificar usuário")
+		return
+	}
+	if !exists {
+		jsonError(w, http.StatusNotFound, "Usuário não encontrado")
+		return
+	}
+
+	// Atualiza os dados no banco
+	_, err = database.DB.Exec("UPDATE Usuarios SET nome = ?, idade = ? WHERE id = ?", usuario.Nome, usuario.Idade, id)
+	if err != nil {
+		log.Println("Erro ao atualizar usuário:", err)
+		jsonError(w, http.StatusInternalServerError, "Erro ao atualizar usuário")
+		return
+	}
+
+	usuario.ID = id
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(usuario)
+}
+
 func main() {
 	database.InitDB() // Inicializa a conexão com o banco
 
@@ -119,10 +183,15 @@ func main() {
 		renderTemplate(w, "adicionar.html")
 	})
 
+	http.HandleFunc("/atualizar", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "atualizar.html")
+	})
+
 	// Endpoints API
 	http.HandleFunc("/getUsers", getUsers)
 	http.HandleFunc("/addUser", addUser)
 	http.HandleFunc("/deleteUser/{id}", deleteUser)
+	http.HandleFunc("/updateUser/{id}", updateUser)
 
 	fs := http.FileServer(http.Dir("static/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
