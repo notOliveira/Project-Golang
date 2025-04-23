@@ -5,43 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar usuários</title>
     <link rel="stylesheet" href="../static/styles.css">
+    <script src="../static/script.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script>
 
-        function addUser() {
-            event.preventDefault();
-            const nome = document.getElementById('nome').value;
-            const idade = parseInt(document.getElementById('idade').value, 10);
-
-            const dataToSend = JSON.stringify({
-                nome: nome,
-                idade: idade
-            });
-
-            console.log(dataToSend);
-
-            fetch('/addUser', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: dataToSend
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-                alert('Usuário adicionado com sucesso!');
-                window.location.href = '/';
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
-        }
+        
         
     </script>
 </head>

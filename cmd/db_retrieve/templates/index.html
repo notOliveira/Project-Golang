@@ -6,62 +6,12 @@
     <title>Lista de Usuários</title>
     <link rel="stylesheet" href="../static/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="../static/script.js"></script>
     <style>
 
     </style>
 
-    <script>
-        // Função para popular a tabela com os dados recebidos
-        function populateTable(data) {
-            const userRows = document.getElementById('userRows');
-            userRows.innerHTML = ''; // Limpa as linhas existentes
-            data.forEach(user => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                <td>${user.ID}</td>
-                <td>${user.Nome}</td>
-                <td>${user.Idade}</td>
-                <td><i class="fa fa-edit" style="font-size:36px;color:white" onclick="window.location.href='/editar/${user.ID}'"></i></td>
-                <td><i class="fa fa-trash-o" style="font-size:36px;color:red" onclick="deleteUser(${user.ID}, '${user.Nome}')"></i></td>
-                `;
-                userRows.appendChild(row);
-            })
-        }
-
-        function getUsers() {
-            const response = fetch('/getUsers')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    populateTable(data);
-                })  
-                .catch(error => {
-                    console.error('There has been a problem with your fetch operation:', error);
-                });
-        }
-
-        function deleteUser(userId, userName) {
-            if (confirm(`Você tem certeza que deseja excluir o usuário ${userName}?`)) {
-                fetch(`/deleteUser/${userId}`, {
-                    method: 'DELETE'
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    alert(`Usuário ${userName} excluído com sucesso!`);
-                    getUsers();
-                })
-                .catch(error => {
-                    console.error('There has been a problem with your fetch operation:', error);
-                });
-            }
-        }
-    
+    <script>    
         document.addEventListener('DOMContentLoaded', (event) => {
             getUsers()
         });

@@ -223,7 +223,7 @@ func main() {
 		renderTemplate(w, "adicionar.html")
 	})
 
-	http.HandleFunc("/atualizar", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/atualizar/{id}", func(w http.ResponseWriter, r *http.Request) {
 		renderTemplate(w, "atualizar.html")
 	})
 

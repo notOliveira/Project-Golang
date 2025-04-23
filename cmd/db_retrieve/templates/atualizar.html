@@ -4,56 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atualizar usuário</title>
+    <script src="../static/script.js"></script>
     <link rel="stylesheet" href="../static/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script>
+        let id = window.location.href.split('/').pop();
 
-        function updateUser() {
+        document.addEventListener('DOMContentLoaded', (event) => {
+            getUser(id)
+        });
+
+        document.addEventListener('submit', function(event) {
             event.preventDefault();
-            const nome = document.getElementById('nome').value;
-            const idade = parseInt(document.getElementById('idade').value, 10);
-
-            const dataToSend = JSON.stringify({
-                nome: nome,
-                idade: idade
-            });
-
-            console.log(dataToSend);
-
-            fetch('/updateUser', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: dataToSend
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data);
-                alert('Usuário atualizado com sucesso!');
-                window.location.href = '/';
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
-        }
-        
+            updateUser(id); 
+        });
     </script>
 </head>
 <body>
-    <h2>Adicionar usuário</h2>
+    <h2>Atualizar usuário</h2>
 
-    <form action="/adicionar" onsubmit="updateUser()">
+    <form>
         <label for="nome">Nome:</label><br>
-        <input type="text" id="nome" name="nome" required value="{{ user.nome }}"><br><br>
+        <input type="text" id="nome" name="nome" required><br><br>
         <label for="idade">Idade:</label><br>
-        <input type="number" id="idade" name="idade" required value="{{ user.idade }}"><br><br>
-        <input type="submit" value="Adicionar">
+        <input type="number" id="idade" name="idade" required><br><br>
+        <input type="submit" value="Atualizar">
     </form>
     <button onclick="window.location.href='/'">Início</button>
 </body>
