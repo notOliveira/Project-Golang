@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"projectGO/pkg/database"
 	"strconv"
+	"database/sql"
 )
 
 type Usuario struct {
@@ -55,6 +56,45 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(usuarios)
 }
+
+// Endpoint GET de usuários
+func getUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		jsonError(w, http.StatusMethodNotAllowed, "Método não permitido")
+		return
+	}
+
+	idStr := r.URL.Path[len("/getUser/"):]
+	if idStr == "" {
+		jsonError(w, http.StatusBadRequest, "ID inválido")
+		return
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		jsonError(w, http.StatusBadRequest, "ID deve ser um número inteiro")
+		return
+	}
+
+	row := database.DB.QueryRow("SELECT id, nome, idade FROM usuarios WHERE id = ?", id)
+
+	var usuario Usuario
+	err = row.Scan(&usuario.ID, &usuario.Nome, &usuario.Idade)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			jsonError(w, http.StatusNotFound, "Usuário não encontrado")
+		} else {
+			log.Println("Erro ao buscar usuário:", err)
+			jsonError(w, http.StatusInternalServerError, "Erro ao buscar usuário")
+		}
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(usuario)
+}
+
+
 
 // Endpoint POST para adicionar um usuário
 func addUser(w http.ResponseWriter, r *http.Request) {
@@ -189,6 +229,7 @@ func main() {
 
 	// Endpoints API
 	http.HandleFunc("/getUsers", getUsers)
+	http.HandleFunc("/getUser/{id}", getUser)
 	http.HandleFunc("/addUser", addUser)
 	http.HandleFunc("/deleteUser/{id}", deleteUser)
 	http.HandleFunc("/updateUser/{id}", updateUser)
