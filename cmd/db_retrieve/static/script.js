@@ -1,5 +1,4 @@
 function getUser(userId) {
-    console.log(userId);
     fetch('/getUser/' + userId)
         .then(response => {
             if (!response.ok) {
@@ -51,11 +50,12 @@ function addUser() {
         },
         body: dataToSend
     })
-    .then(response => {
+    .then(async response => {
+        const responseData = await response.json(); // sempre tenta pegar o JSON
         if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
+            throw new Error(responseData.error || 'Erro desconhecido');
         }
-        return response.json();
+        return responseData;
     })
     .then(data => {
         console.log(data);
@@ -63,9 +63,11 @@ function addUser() {
         window.location.href = '/';
     })
     .catch(error => {
-        console.error('There has been a problem with your fetch operation:', error);
+        console.error('Erro ao adicionar usuário:', error.message);
+        alert('Erro: ' + error.message);
     });
 }
+
 
 function deleteUser(userId, userName) {
     if (confirm(`Você tem certeza que deseja excluir o usuário ${userName}?`)) {
@@ -120,11 +122,12 @@ function updateUser(userId) {
         },
         body: dataToSend
     })
-    .then(response => {
+    .then(async response => {
+        const responseData = await response.json(); // pega o JSON sempre
         if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
+            throw new Error(responseData.error || 'Erro desconhecido');
         }
-        return response.json();
+        return responseData;
     })
     .then(data => {
         console.log(data);
@@ -132,6 +135,7 @@ function updateUser(userId) {
         window.location.href = '/';
     })
     .catch(error => {
-        console.error('There has been a problem with your fetch operation:', error);
+        console.error(error.message); // agora o erro.message vai ser "Dados inválidos"
+        alert('Erro: ' + error.message); // opcional: mostrar para o usuário
     });
 }
