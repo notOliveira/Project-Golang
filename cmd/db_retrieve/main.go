@@ -33,11 +33,11 @@ func renderTemplate(w http.ResponseWriter, templateName string) {
 	tmpl.Execute(w, nil)
 }
 
-// Endpoint GET de usuários
+// GET /getUsers
 func getUsers(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.DB.Query("SELECT id, nome, idade FROM usuarios")
 	if err != nil {
-		http.Error(w, "Erro ao buscar os dados", http.StatusInternalServerError)
+		jsonError(w, http.StatusInternalServerError, "Erro ao buscar os dados")
 		return
 	}
 	defer rows.Close()
@@ -46,18 +46,17 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var u Usuario
 		if err := rows.Scan(&u.ID, &u.Nome, &u.Idade); err != nil {
-			http.Error(w, "Erro ao ler os dados", http.StatusInternalServerError)
+			jsonError(w, http.StatusInternalServerError, "Erro ao ler os dados")
 			return
 		}
 		usuarios = append(usuarios, u)
 	}
 
-	// Define o header como JSON
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(usuarios)
 }
 
-// Endpoint GET de usuários
+// GET /getUser/{id}
 func getUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		jsonError(w, http.StatusMethodNotAllowed, "Método não permitido")
@@ -65,26 +64,18 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	idStr := r.URL.Path[len("/getUser/"):]
-	if idStr == "" {
+	id, err := strconv.Atoi(idStr)
+	if err != nil || idStr == "" {
 		jsonError(w, http.StatusBadRequest, "ID inválido")
 		return
 	}
 
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		jsonError(w, http.StatusBadRequest, "ID deve ser um número inteiro")
-		return
-	}
-
-	row := database.DB.QueryRow("SELECT id, nome, idade FROM usuarios WHERE id = ?", id)
-
 	var usuario Usuario
-	err = row.Scan(&usuario.ID, &usuario.Nome, &usuario.Idade)
+	err = database.DB.QueryRow("SELECT id, nome, idade FROM usuarios WHERE id = ?", id).Scan(&usuario.ID, &usuario.Nome, &usuario.Idade)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			jsonError(w, http.StatusNotFound, "Usuário não encontrado")
 		} else {
-			log.Println("Erro ao buscar usuário:", err)
 			jsonError(w, http.StatusInternalServerError, "Erro ao buscar usuário")
 		}
 		return
@@ -94,101 +85,54 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(usuario)
 }
 
-
-
-// Endpoint POST para adicionar um usuário
+// POST /addUser
 func addUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		jsonError(w, http.StatusMethodNotAllowed, "Método não permitido")
 		return
 	}
-
 	defer r.Body.Close()
 
 	var usuario Usuario
-
-	// Tenta decodificar o JSON da requisição
 	err := json.NewDecoder(r.Body).Decode(&usuario)
-
-	log.Println("Dados recebidos:", usuario)
-
-	if err != nil {
-		log.Println("Erro ao decodificar JSON:", err)
-		http.Error(w, "Erro ao decodificar JSON", http.StatusBadRequest)
+	if err != nil || usuario.Nome == "" || usuario.Idade <= 0 {
+		jsonError(w, http.StatusBadRequest, "Dados inválidos")
 		return
 	}
 
-	// Insere os dados no banco
-	_, err = database.DB.Exec("INSERT INTO Usuarios (nome, idade) VALUES (?, ?)", usuario.Nome, usuario.Idade)
+	res, err := database.DB.Exec("INSERT INTO Usuarios (nome, idade) VALUES (?, ?)", usuario.Nome, usuario.Idade)
 	if err != nil {
-		log.Println("Erro ao inserir usuário:", err)
-		http.Error(w, "Erro ao inserir usuário", http.StatusInternalServerError)
+		jsonError(w, http.StatusInternalServerError, "Erro ao inserir usuário")
 		return
 	}
 
-	// Retorna um JSON do usuário inserido
+	lastID, _ := res.LastInsertId()
+	usuario.ID = int(lastID)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(usuario)
 }
 
-// Endpoint DELETE para excluir um usuário
+// DELETE /deleteUser/{id}
 func deleteUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
-		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
-		return
-	}
-	// Extrai o ID do usuário da URL
-	id := r.URL.Path[len("/deleteUser/"):]
-	if id == "" {
-		http.Error(w, "ID inválido", http.StatusBadRequest)
-		return
-	}
-
-	// Executa a exclusão no banco de dados
-	_, err := database.DB.Exec("DELETE FROM Usuarios WHERE id = ?", id)
-	if err != nil {
-		log.Println("Erro ao excluir usuário:", err)
-		http.Error(w, "Erro ao excluir usuário", http.StatusInternalServerError)
-		return
-	}
-}
-
-// Endpoint PUT para atualizar um usuário
-func updateUser(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPut {
 		jsonError(w, http.StatusMethodNotAllowed, "Método não permitido")
 		return
 	}
 
-	idStr := r.URL.Path[len("/updateUser/"):]
-	if idStr == "" {
+	idStr := r.URL.Path[len("/deleteUser/"):]
+	id, err := strconv.Atoi(idStr)
+	if err != nil || idStr == "" {
 		jsonError(w, http.StatusBadRequest, "ID inválido")
 		return
 	}
 
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		jsonError(w, http.StatusBadRequest, "ID deve ser um número inteiro")
-		return
-	}
-
-	var usuario Usuario
-	err = json.NewDecoder(r.Body).Decode(&usuario)
-	if err != nil {
-		log.Println("Erro ao decodificar JSON:", err)
-		jsonError(w, http.StatusBadRequest, "Erro ao decodificar JSON")
-		return
-	}
-
-	log.Println("Dados recebidos:", usuario)
-
 	// Verifica se o usuário existe
 	var exists bool
-	err = database.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM Usuarios WHERE id = ?)", id).Scan(&exists)
+	err = database.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM usuarios WHERE id = ?)", id).Scan(&exists)
 	if err != nil {
-		log.Println("Erro ao verificar existência do usuário:", err)
-		jsonError(w, http.StatusInternalServerError, "Erro interno ao verificar usuário")
+		jsonError(w, http.StatusInternalServerError, "Erro ao verificar usuário")
 		return
 	}
 	if !exists {
@@ -196,20 +140,59 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Atualiza os dados no banco
-	_, err = database.DB.Exec("UPDATE Usuarios SET nome = ?, idade = ? WHERE id = ?", usuario.Nome, usuario.Idade, id)
+	_, err = database.DB.Exec("DELETE FROM usuarios WHERE id = ?", id)
 	if err != nil {
-		log.Println("Erro ao atualizar usuário:", err)
+		jsonError(w, http.StatusInternalServerError, "Erro ao excluir usuário")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"message": "Usuário excluído com sucesso"})
+}
+
+// PUT /updateUser/{id}
+func updateUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPut {
+		jsonError(w, http.StatusMethodNotAllowed, "Método não permitido")
+		return
+	}
+
+	idStr := r.URL.Path[len("/updateUser/"):]
+	id, err := strconv.Atoi(idStr)
+	if err != nil || idStr == "" {
+		jsonError(w, http.StatusBadRequest, "ID inválido")
+		return
+	}
+
+	var usuario Usuario
+	err = json.NewDecoder(r.Body).Decode(&usuario)
+	if err != nil || usuario.Nome == "" || usuario.Idade <= 0 {
+		jsonError(w, http.StatusBadRequest, "Dados inválidos")
+		return
+	}
+
+	var exists bool
+	err = database.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM usuarios WHERE id = ?)", id).Scan(&exists)
+	if err != nil {
+		jsonError(w, http.StatusInternalServerError, "Erro ao verificar usuário")
+		return
+	}
+	if !exists {
+		jsonError(w, http.StatusNotFound, "Usuário não encontrado")
+		return
+	}
+
+	_, err = database.DB.Exec("UPDATE usuarios SET nome = ?, idade = ? WHERE id = ?", usuario.Nome, usuario.Idade, id)
+	if err != nil {
 		jsonError(w, http.StatusInternalServerError, "Erro ao atualizar usuário")
 		return
 	}
 
 	usuario.ID = id
-
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(usuario)
 }
+
 
 func main() {
 	database.InitDB() // Inicializa a conexão com o banco
