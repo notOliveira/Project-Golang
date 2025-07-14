@@ -4,27 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Usuários</title>
+    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="../static/script.js"></script>
     <style>
-        table { width: 50%; margin: auto; border-collapse: collapse; }
-        th, td { border: 1px solid black; padding: 8px; text-align: center; }
-        th { background-color: #ddd; }
+
     </style>
+
+    <script>    
+        document.addEventListener('DOMContentLoaded', (event) => {
+            getUsers()
+        });
+    </script>
 </head>
 <body>
-    <h2 style="text-align: center;">Lista de Usuários</h2>
+    <h2>Lista de Usuários</h2>
     <table>
         <tr>
             <th>ID</th>
             <th>Nome</th>
             <th>Idade</th>
+            <th>Editar</th>
+            <th>Excluir</th>
         </tr>
-        {{range .}}
-        <tr>
-            <td>{{.ID}}</td>
-            <td>{{.Nome}}</td>
-            <td>{{.Idade}}</td>
-        </tr>
-        {{end}}
+        <tbody id="userRows">
+            <!-- As linhas da tabela serão preenchidas aqui pelo JavaScript -->
+        </tbody>
     </table>
+    <button onclick="window.location.href='/adicionar'">Adicionar Usuário</button>
 </body>
 </html>

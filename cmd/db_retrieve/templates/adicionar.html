@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar usuários</title>
+    <link rel="stylesheet" href="../static/styles.css">
+    <script src="../static/script.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script>
+
+        
+        
+    </script>
+</head>
+<body>
+    <h2>Adicionar usuário</h2>
+
+    <form action="/adicionar" method="POST" onsubmit="addUser()">
+        <label for="nome">Nome:</label><br>
+        <input type="text" id="nome" name="nome" required><br><br>
+        <label for="idade">Idade:</label><br>
+        <input type="number" id="idade" name="idade" required><br><br>
+        <input type="submit" value="Adicionar">
+    </form>
+    <button onclick="window.location.href='/'">Início</button>
+</body>
+</html>

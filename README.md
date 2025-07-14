@@ -1,5 +1,7 @@
 # Project Go
 
+## [Documentação GO](https://pkg.go.dev/)
+
 ## Aprendendo Golang
 
 Não sei muito sobre essa linguagem, então esse repo vai estar meio desorganizado, provavelmente.
