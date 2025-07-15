@@ -19,21 +19,47 @@
     </tr>
 </table>
 
-## Variáveis
+## Variáveis & Constantes
 
-##### Declaração rápida
+<details>
+    <summary>
+    <h3>Declaração rápida de variável (inferência de tipo)</h3>
+    </summary>
 
-<code>
     idade := 30
-</code>
+</details>
 
-OBS: Só pode ser usado dentro de funções.
+<i>OBS: Só pode ser usado dentro de funções. Só funciona para variáveis</i>
 
-##### Declaração explícita
+<details>
+    <summary>
+        <h3>Declaração explícita de variável/constante</h3>
+    </summary>
+    
+    var idade1 int = 30
 
-<code>
-    var idade int = 30
-</code>
+    const idade2 int = 25
+
+    // Ou
+
+    var nome1 string
+    nome = "João"
+
+    // Ou
+
+    var dia = "Terça-Feira"
+
+    const data = "26 de fevereiro"
+
+</details>
+
+<details>
+    <summary>
+        <h3>Declaração múltipla</h3>
+    </summary>
+
+    var a, b int = 1, 2
+</details>
 
 ## Pacotes + Funções essenciais
 
