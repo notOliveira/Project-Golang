@@ -130,9 +130,9 @@ OBS: O "_" ignora apenas um parâmetro por vez, ou seja, para cada parâmetro de
 
 Existem algumas estruturas para manipular dados:
 
-- Arrays &rarr; Lista com tamanho fixo
-- Slices &rarr; Lista com tamanho variável, mais usado que os arrays
-- Maps &rarr; Dicionário com tamanho variável
+- <b>Arrays</b> &rarr; Lista com tamanho fixo
+- <b>Slices</b> &rarr; Lista com tamanho variável, mais usado que os arrays
+- <b>Maps</b> &rarr; Dicionário com tamanho variável
 
 <details>
     <summary>
@@ -199,3 +199,21 @@ Existem algumas estruturas para manipular dados:
     m = make(map[string]int) // Após esse comando é possível utilizar o map
 
 </details>
+
+<hr>
+
+Inserindo valores:
+
+```
+var s []int
+s = append(s, 1, 4, 8) // [1 4 8]
+
+var a [3]int = [3]int{2}
+a[2] = 4 // [2 0 4]
+```
+
+Para consultar o length:
+
+```
+len(slice)
+```

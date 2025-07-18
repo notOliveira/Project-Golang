@@ -28,7 +28,17 @@ func main() {
 	s[1] = 3
 	s[2] = 233
 	
-	System.Print(s)
+	System.Println(s)
+
+	var s1 []int
+	s1 = append(s1, 1)
+
+	System.Println(s1)
+
+	var ar [3]int = [3]int{2}
+	ar[2] = 4
+
+	System.Println(ar)
 
 }
 func nomeSobrenome1(nome, meio, sobrenome string) (string, string, string) {
