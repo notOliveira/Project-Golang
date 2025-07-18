@@ -83,3 +83,45 @@
     %T -> Printa o tipo da variável
 </details>
 
+## Funções
+
+- Se a função tiver um nome iniciado por letra minúscula, ela é privada, ou seja, só pode ser utilizada no próprio pacote
+- Se for com letra maíuscula, pode ser usada em outros pacotes também
+
+<details>
+    <summary>
+        <h3>Declaração</h3>
+    </summary>
+
+    // Função obrigatória. A função main sempre é a função principal do Go.
+    func main() {
+        fmt.Printf("A soma é %v", soma(2,3))
+    }
+
+    func soma(x int, y int) int {
+        return x + y
+    }
+
+</details>
+
+<details>
+    <summary>
+        <h3>Ignorar retorno de função</h3>
+    </summary>
+
+    func main() {
+        nome, _ := nomeSobrenome("Gustavo", "Oliveira")
+
+        _, sobrenome = nomeSobrenome("José", "Maria")
+
+        fmt.Println(nome) // Gustavo
+        fmt.PrintLn(sobrenome) //  Maria
+    }
+
+    func nomeSobrenome(nome, sob string) (string, string) {
+        return nome, sobrenome
+    }
+
+</details>
+
+OBS: O "_" ignora apenas um parâmetro por vez, ou seja, para cada parâmetro de retorno a ser ignorado, deve-se usar o _
