@@ -125,3 +125,77 @@
 </details>
 
 OBS: O "_" ignora apenas um parâmetro por vez, ou seja, para cada parâmetro de retorno a ser ignorado, deve-se usar o _
+
+## Listas e dicionários
+
+Existem algumas estruturas para manipular dados:
+
+- Arrays &rarr; Lista com tamanho fixo
+- Slices &rarr; Lista com tamanho variável, mais usado que os arrays
+- Maps &rarr; Dicionário com tamanho variável
+
+<details>
+    <summary>
+        <h3>Declarações - Arrays</h3>
+    </summary>
+
+    // Declaração explícita
+    var a [3]int = [3]int{1, 2, 3}
+
+    // Com valores
+    a := [3]int{1, 2, 3}
+
+    // Com inferência
+     a := [3]int{1, 2, 3}
+
+     // Automatizada, valores contados pelo compilador
+     a := [...]int{10, 20, 30}
+
+</details>
+
+<details>
+    <summary>
+        <h3>Declarações - Slices</h3>
+    </summary>
+
+    // Declaração explícita com valores
+    var s []int = []int{1, 2, 3}
+
+    // Com valores
+    s := []int{1, 2, 3}
+
+    // Vazio
+    var s []int
+
+    // Com make
+    s := make([]int, 5)     // Posições zeradas
+    s := make([]int, 3, 10) // len=3, cap=10
+
+    // A partir de um array
+    a := [5]int{1, 2, 3, 4, 5}
+    s := a[1:4]     // slice: [2 3 4]
+
+</details>
+
+<details>
+    <summary>
+        <h3>Declarações - Maps</h3>
+    </summary>
+
+    // Declaração explícita
+    var m map[string]int = make(map[string]int)
+
+    // Com valores:
+    m := map[string]int{
+        "joao": 10,
+        "maria": 20,
+    }
+
+    // Com inferência
+    m := make(map[string]int)
+
+    // Vazio - Evitar usar pois é necessário inicializar o map
+    var m map[string]int
+    m = make(map[string]int) // Após esse comando é possível utilizar o map
+
+</details>

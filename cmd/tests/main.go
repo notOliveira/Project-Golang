@@ -21,8 +21,16 @@ func main() {
 	nome, _, _:= nomeSobrenome1("Arboleda", "de", "Souza")
 
 	System.Printf("Type: %T - Value: %v - Go value - %#v\n", nome, nome, nome)
-}
 
+	s := make([]int, 5)
+
+	s[0] = 3214234
+	s[1] = 3
+	s[2] = 233
+	
+	System.Print(s)
+
+}
 func nomeSobrenome1(nome, meio, sobrenome string) (string, string, string) {
 	return nome + "1", meio + "1", sobrenome + "1"
 }
