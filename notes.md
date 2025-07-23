@@ -182,21 +182,26 @@ Existem algumas estruturas para manipular dados:
         <h3>Declarações - Maps</h3>
     </summary>
 
-    // Declaração explícita
+    // Declaração explícita com inicialização usando make
     var m map[string]int = make(map[string]int)
 
-    // Com valores:
+    // Declaração com inicialização e valores (literal)
     m := map[string]int{
-        "joao": 10,
+        "joao":  10,
         "maria": 20,
     }
 
-    // Com inferência
+    // Declaração com inferência e inicialização vazia usando make
     m := make(map[string]int)
 
-    // Vazio - Evitar usar pois é necessário inicializar o map
+    // Ou inicialização vazia usando literal
+    m = map[string]int{}
+
+    // Declaração sem inicialização (map nil)
     var m map[string]int
-    m = make(map[string]int) // Após esse comando é possível utilizar o map
+    // m está nil, não pode adicionar valores ainda
+    // Para usar, precisa inicializar:
+    m = make(map[string]int) // Agora pode usar normalmente
 
 </details>
 
