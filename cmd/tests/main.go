@@ -2,6 +2,7 @@ package main
 
 import (
 	// Mudando o nome do pacote para System
+	"fmt"
 	System "fmt"
 )
 
@@ -39,6 +40,40 @@ func main() {
 	ar[2] = 4
 
 	System.Println(ar)
+
+	type Pessoa struct {
+		Nome      string
+		Sobrenome string
+		Idade     int
+	}
+
+	var gustavo = Pessoa{
+		Nome:	"Gustavo",
+		Sobrenome: "Arboleda",
+		Idade:     30,
+	}
+
+	var pessoasMap =  make(map[int]Pessoa)
+
+	fmt.Printf("Nome: %v - Sobrenome: %v - Idade: %v\n\n", gustavo.Nome, gustavo.Sobrenome, gustavo.Idade)
+	
+	for i := 0; i < 20; i++ {
+		pessoasMap[i] = Pessoa{
+			Nome:      fmt.Sprintf("Aluno %d", i),
+			Sobrenome: fmt.Sprintf("Fulano %d", i),
+			Idade:     i + 20,
+		}
+	}
+
+	for i, pessoa := range pessoasMap {
+		System.Printf("Index: %v - Nome: %v - Sobrenome: %v - Idade: %v\n", i, pessoa.Nome, pessoa.Sobrenome, pessoa.Idade)
+	}
+
+	if idade := 18; idade >= 18 {
+        fmt.Println("Maior de idade")
+    } else {
+        fmt.Println("Menor de idade")
+    }
 
 }
 func nomeSobrenome1(nome, meio, sobrenome string) (string, string, string) {

@@ -205,6 +205,8 @@ Existem algumas estruturas para manipular dados:
 
 </details>
 
+OBS: Os maps no Go não mantêm a ordem dos elementos, ou seja, não é garantido que a ordem de inserção será a mesma na hora de iterar sobre os elementos.
+
 <hr>
 
 Inserindo valores:
@@ -222,3 +224,93 @@ Para consultar o length:
 ```
 len(slice)
 ```
+
+## Structs
+
+<details>
+    <summary>
+        <h3>Declaração</h3>
+    </summary>
+
+    type Pessoa struct {
+        Nome      string
+        Sobrenome string
+        Idade     int
+    }
+
+    // Declaração de variável do tipo Pessoa
+    var gustavo Pessoa
+
+    // Declaração com valores
+    gustavo := Pessoa{
+        Nome:      "Gustavo",
+        Sobrenome: "Oliveira",
+        Idade:     30
+    }
+
+    É possível também declarar sem os nomes dos campos, mas não é recomendado:
+    gustavo := Pessoa{"Gustavo", "Oliveira", 30}
+
+    // Acessando os campos
+    fmt.Println(gustavo.Nome) // Gustavo
+
+    // Structs dentro de outras structs
+    type Endereco struct {
+        Rua    string
+        Numero int
+    }
+
+    type Pessoa struct {
+        Nome      string
+        Sobrenome string
+        Idade     int
+        Endereco  Endereco // Struct dentro de outra struct
+    }
+
+    // Acessando os campos da struct interna
+    fmt.Println(gustavo.Endereco.Rua) // Rua Exemplo
+
+    // Slice de structs
+    pessoas := []Pessoa{
+        {Nome: "Gustavo", Sobrenome: "Oliveira", Idade: 30},
+        {Nome: "Maria", Sobrenome: "Silva", Idade: 25},
+    }
+
+</details>
+
+Podem ser usadas como uma classe, 
+
+## If / Else
+
+<details>
+    <summary>
+        <h3>Declaração</h3>
+    </summary>
+
+    idade := 18
+
+    if idade >= 18 {
+        fmt.Println("Maior de idade")
+    } else {
+        fmt.Println("Menor de idade")
+    }
+
+    // Com else if
+    if idade < 12 {
+        fmt.Println("Criança")
+    } else if idade < 18 {
+        fmt.Println("Adolescente")
+    } else {
+        fmt.Println("Adulto")
+    }
+
+    // Com declaração curta
+    if idade := 18; idade >= 18 {
+        fmt.Println("Maior de idade")
+    } else {
+        fmt.Println("Menor de idade")
+    }
+
+    // OBS: A variável idade só existe dentro do if/else
+
+</details>
