@@ -19,6 +19,8 @@
     </tr>
 </table>
 
+<i></o>OBS: <b>nil</b> é um valor especial que representa a ausência de valor para alguns tipos, como ponteiros, slices, maps, channels e interfaces. Semelhante ao None do Python e null em outras linguagens.</i>
+
 ## Variáveis & Constantes
 
 <details>
@@ -175,6 +177,9 @@ Existem algumas estruturas para manipular dados:
     a := [5]int{1, 2, 3, 4, 5}
     s := a[1:4]     // slice: [2 3 4]
 
+    // Declaração de mais de um slice ao mesmo tempo
+    var s1, s2 []int
+
 </details>
 
 <details>
@@ -314,3 +319,77 @@ Podem ser usadas como uma classe,
     // OBS: A variável idade só existe dentro do if/else
 
 </details>
+
+## Switch / Case
+
+<details>
+    <summary>
+        <h3>Declaração</h3>
+    </summary>
+
+    dia := "Segunda"
+
+    switch dia {
+    case "Segunda":
+        fmt.Println("Início da semana")
+    case "Sábado", "Domingo":
+        fmt.Println("Fim de semana")
+    default:
+        fmt.Println("Dia da semana")
+    }
+
+    // Com expressão
+    switch {
+    case dia == "Segunda":
+        fmt.Println("Início da semana")
+    case dia == "Sábado" || dia == "Domingo":
+        fmt.Println("Fim de semana")
+    default:
+        fmt.Println("Dia da semana")
+    }
+
+    // Com declaração curta
+    switch dia := "Segunda"; dia {
+    case "Segunda":
+        fmt.Println("Início da semana")
+    case "Sábado", "Domingo":
+        fmt.Println("Fim de semana")
+    default:
+        fmt.Println("Dia da semana")
+    }
+</details>
+
+## For (Loops)
+
+<details>
+    <summary>
+        <h3>Declaração</h3>
+    </summary>
+
+    // Loop tradicional
+    for i := 0; i < 5; i++ {
+        fmt.Println(i)
+    }
+
+    // Loop com range (para slices, arrays e maps)
+    numeros := []int{1, 2, 3, 4, 5}
+    for i, num := range numeros {
+        fmt.Printf("Índice: %d - Valor: %d\n", i, num)
+    }
+
+    // Loop infinito
+    for {
+        fmt.Println("Loop infinito")
+        break // Para sair do loop
+        // Se não tiver o break, o loop continuará indefinidamente
+        // Para parar o programa, pode usar ctrl + C no terminal
+    }  
+
+    // Loop com condição (similar ao while)
+    count := 0
+    for count < 5 {
+        fmt.Println(count)
+        count++
+    }
+</details>  
+
