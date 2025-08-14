@@ -70,12 +70,19 @@
 <details>
     <summary>
         .Printf() &rarr; Print de texto formatado
+        .Sprintf() &rarr; Retorna o valor de uma string formatada
     </summary>
 
-    Exemplo: 
+    // Exemplo: 
 
     fmt.Printf("Type: %T - Value: %v", true, true)
-    Resultado: Type: bool - Value: true
+    // Resultado: Type: bool - Value: true
+
+    // Para retornar o valor de uma string formatada:
+
+    str := fmt.Sprintf("Número: %d, Texto: %s", 42, "oi")
+    fmt.Println(str)
+    // Resultado: Número: 42, Texto: oi
 
     --
 
@@ -83,6 +90,41 @@
     
     %v -> Printa o valor da variável
     %T -> Printa o tipo da variável
+</details>
+
+##### strconv
+
+<details>
+    <summary>
+        .Itoa() &rarr; Converte int para string
+        .Atoi() &rarr; Converte string para int
+    </summary>
+
+    // Exemplo:
+
+    str := strconv.Itoa(123) // "123"
+    num, err := strconv.Atoi("456") // 456, nil (se a conversão for bem-sucedida)
+
+    if err != nil {
+        fmt.Println("Erro na conversão:", err)
+    } else {
+        fmt.Println("Número convertido:", num)
+    }
+
+    // Resultado: Número convertido: 456
+
+    // OBS: A função Atoi retorna dois valores: o número convertido e um erro (se houver). É importante sempre verificar o erro ao fazer a conversão.
+
+    // Outras funções úteis do pacote strconv:
+    str := strconv.FormatBool(true) // "true"
+    str := strconv.FormatFloat(3.14, 'f', 2, 64) // "3.14"
+    str := strconv.FormatInt(12345, 10) // "12345"
+    num, err := strconv.ParseBool("true") // true, nil
+    num, err := strconv.ParseFloat("3.14", 64) // 3.14, nil
+    num, err := strconv.ParseInt("12345", 10, 64) // 12345, nil
+
+    // Sempre verificar o erro ao usar as funções Parse*
+    
 </details>
 
 ## Funções
