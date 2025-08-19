@@ -2,6 +2,31 @@
 
 <em>Não espere coisas boas daqui, pois estou aprendendo!</em>
 
+## Iniciando projeto Go
+
+<code>go mod init github.com/notOliveira/Project-Golang</code>
+
+#### Para rodar o arquivo/projeto
+
+<code>go run main.go</code>
+
+#### Para buildar o arquivo/projeto
+
+<code>go build -o executavel .</code>
+
+<i>
+-o - output<br>
+executavel - nome do arquivo<br>
+. = pasta onde o arquivo será gerado
+</i>
+
+#### Para gerenciar automaticamente os imports (baixar e limpar)
+
+<code>go mod tidy</code>
+
+- go.mod &rarr; Arquivo que gerencia as dependências do projeto
+- go.sum &rarr; Arquivo que armazena as versões exatas das dependências usadas no projeto
+
 ## Tipos principais de dados
 
 <table>
