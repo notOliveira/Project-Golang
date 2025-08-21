@@ -55,6 +55,9 @@ go build -o nome_arquivo.exe
 
 <i>OBS: Só pode ser usado dentro de funções. Só funciona para variáveis</i>
 
+### &rarr; &rarr; &rarr; Detalhe ultra mega importante: &larr; &larr; &larr;
+Ao declarar funções, caso ela seja iniciada com a letra minúscula, ela será apenas interna ao seu pacote. Do contrário, ela poderá ser exportada e utilizada em outros pacotes do seu projeto Go.
+
 <details>
     <summary>
         <h3>Declaração explícita de variável/constante</h3>
