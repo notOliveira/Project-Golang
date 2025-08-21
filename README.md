@@ -1,10 +1,8 @@
-# Project Go
+# Caderno - Go
 
 ## [Documentação GO](https://pkg.go.dev/)
 
-## Aprendendo Golang
-
-Não sei muito sobre essa linguagem, então esse repo vai estar meio desorganizado, provavelmente.
+Não sei muito sobre essa linguagem, então esse repo vai estar meio desorganizado, provavelmente. Mas aqui tem muita coisa que você pode se basear para aprender Go.
 
 #### Para rodar os códigos
 
